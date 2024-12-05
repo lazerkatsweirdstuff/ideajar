@@ -3,10 +3,13 @@ import random
 
 app = Flask(__name__)
 
-# A list to store ideas
+# Store ideas
 ideas = []
 
-# Route to submit an idea
+@app.route('/')
+def home():
+    return "Welcome to the Idea Generator API!"
+
 @app.route('/submit', methods=['POST'])
 def submit_idea():
     data = request.json
@@ -16,7 +19,6 @@ def submit_idea():
         return jsonify({"message": "Idea submitted successfully!"}), 200
     return jsonify({"error": "No idea provided"}), 400
 
-# Route to get a random idea
 @app.route('/random', methods=['GET'])
 def get_random_idea():
     if ideas:
@@ -24,4 +26,6 @@ def get_random_idea():
     return jsonify({"message": "No ideas available"}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
