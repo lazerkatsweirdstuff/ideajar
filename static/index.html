@@ -1,5 +1,52 @@
-from flask import Flask, request, jsonify, send_from_directory
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idea Generator</title>
+</head>
+<body>
+    <h1>Submit an Idea</h1>
+    <form id="ideaForm">
+        <input type="text" id="ideaInput" placeholder="Enter your idea" required>
+        <button type="submit">Submit</button>
+    </form>
 
-@app.route('/')
-def index():
-    return send_from_directory('static', 'index.html')
+    <h2>Random Idea</h2>
+    <button id="randomIdeaButton">Get a Random Idea</button>
+    <p id="randomIdeaDisplay">Click the button to see a random idea!</p>
+
+    <script>
+        // Handle form submission
+        document.getElementById('ideaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const idea = document.getElementById('ideaInput').value;
+
+            const response = await fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ idea })
+            });
+
+            const result = await response.json();
+            alert(result.message || result.error);
+            document.getElementById('ideaInput').value = ''; // Clear input field
+        });
+
+        // Handle random idea button click
+        document.getElementById('randomIdeaButton').addEventListener('click', async () => {
+            const response = await fetch('/random');
+            const data = await response.json();
+
+            const randomIdeaDisplay = document.getElementById('randomIdeaDisplay');
+            if (data.idea) {
+                randomIdeaDisplay.textContent = `Random Idea: ${data.idea}`;
+            } else {
+                randomIdeaDisplay.textContent = 'No ideas available!';
+            }
+        });
+    </script>
+</body>
+</html>
