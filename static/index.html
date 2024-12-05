@@ -4,49 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Idea Generator</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Submit an Idea</h1>
+    <h1>Idea Generator</h1>
+
+    <!-- Submit Idea Form -->
     <form id="ideaForm">
         <input type="text" id="ideaInput" placeholder="Enter your idea" required>
         <button type="submit">Submit</button>
     </form>
 
+    <!-- Random Idea -->
     <h2>Random Idea</h2>
     <button id="randomIdeaButton">Get a Random Idea</button>
     <p id="randomIdeaDisplay">Click the button to see a random idea!</p>
 
-    <script>
-        // Handle form submission
-        document.getElementById('ideaForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const idea = document.getElementById('ideaInput').value;
+    <!-- Filter Ideas -->
+    <h2>Filter Ideas</h2>
+    <form id="filterForm">
+        <input type="text" id="filterInput" placeholder="Enter keyword">
+        <button type="submit">Filter</button>
+    </form>
+    <ul id="filteredIdeasList"></ul>
 
-            const response = await fetch('/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ idea })
-            });
+    <!-- Admin Section (Clear All) -->
+    <h2>Admin</h2>
+    <input type="password" id="adminKey" placeholder="Enter admin key">
+    <button id="clearButton">Clear All Ideas</button>
 
-            const result = await response.json();
-            alert(result.message || result.error);
-            document.getElementById('ideaInput').value = ''; // Clear input field
-        });
-
-        // Handle random idea button click
-        document.getElementById('randomIdeaButton').addEventListener('click', async () => {
-            const response = await fetch('/random');
-            const data = await response.json();
-
-            const randomIdeaDisplay = document.getElementById('randomIdeaDisplay');
-            if (data.idea) {
-                randomIdeaDisplay.textContent = `Random Idea: ${data.idea}`;
-            } else {
-                randomIdeaDisplay.textContent = 'No ideas available!';
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
