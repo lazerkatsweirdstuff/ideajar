@@ -7,8 +7,8 @@ app = Flask(__name__, static_folder='static')
 # Store ideas
 ideas = []
 
-# Secret key for clearing items
-SECRET_KEY = "your-secret-key"
+# List of banned words (expand as needed)
+BANNED_WORDS = {"swearword1", "swearword2", "swearword3"}
 
 # Serve the static HTML file
 @app.route('/')
@@ -21,6 +21,9 @@ def submit_idea():
     data = request.json
     idea = data.get("idea")
     if idea:
+        # Check for banned words
+        if any(banned_word in idea.lower() for banned_word in BANNED_WORDS):
+            return jsonify({"error": "Your idea contains inappropriate language."}), 400
         ideas.append(idea)
         return jsonify({"message": "Idea submitted successfully!"}), 200
     return jsonify({"error": "No idea provided"}), 400
@@ -31,23 +34,6 @@ def get_random_idea():
     if ideas:
         return jsonify({"idea": random.choice(ideas)})
     return jsonify({"message": "No ideas available"}), 200
-
-# Clear all ideas (protected)
-@app.route('/clear', methods=['POST'])
-def clear_ideas():
-    data = request.json
-    key = data.get("key")
-    if key == SECRET_KEY:
-        ideas.clear()
-        return jsonify({"message": "All ideas cleared!"}), 200
-    return jsonify({"error": "Unauthorized"}), 403
-
-# Filter ideas by keyword
-@app.route('/filter', methods=['GET'])
-def filter_ideas():
-    keyword = request.args.get("keyword", "").lower()
-    filtered = [idea for idea in ideas if keyword in idea.lower()]
-    return jsonify({"ideas": filtered}), 200
 
 # Main entry point for local development
 if __name__ == '__main__':
